@@ -26,9 +26,9 @@
                 extend: {
                     colors: {
                         brand: {
-                            yellow: '#F59E0B',   /* amber-500 */
-                            orange: '#EA580C',   /* orange-600 */
-                            red: '#DC2626',      /* red-600 */
+                            yellow: '#F59E0B', 
+                            orange: '#EA580C', 
+                            red: '#DC2626',
                             dark: '#0A0A0A',
                             gray: '#171717',
                         }
@@ -83,7 +83,7 @@
             height: 100%;
             z-index: -1;
             opacity: 0.6;
-            pointer-events: none; /* Let clicks pass through */
+            pointer-events: none;
         }
 
         /* Gradient Text */
@@ -140,10 +140,9 @@
     <div id="canvas-container"></div>
 
     <!-- GLOBAL PAGE OVERLAY FOR FOCUS MODE -->
-    <!-- This sits above everything else (z-55) except the active card which will be z-60 -->
     <div id="focus-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[55] opacity-0 pointer-events-none transition-opacity duration-500"></div>
 
-    <!-- Navigation -->
+    <!-- Nav -->
     <nav class="fixed w-full z-50 top-0 transition-all duration-300" id="navbar">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
@@ -1480,7 +1479,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             initThreeJS();
             initCalendar();
-            // Set initial button text based on default lang (EN) so button shows option to switch to ES
+            // En ES
             document.getElementById('lang-btn-text').innerText = "ES";
             document.getElementById('lang-btn-text-mobile').innerText = "ES";
         });
@@ -1488,3 +1487,4 @@
     </script>
 </body>
 </html>
+

@@ -20,6 +20,9 @@
     <!-- Markdown Parser (for AI responses) -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
+    <!-- Calendly CSS -->
+    <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+
     <script>
         tailwind.config = {
             theme: {
@@ -132,6 +135,17 @@
             0%, 80%, 100% { transform: scale(0); }
             40% { transform: scale(1); }
         }
+
+        /* LOCK STATE STYLES */
+        .locked-state {
+            filter: blur(8px) grayscale(0.8);
+            pointer-events: none;
+            transition: all 0.8s ease;
+        }
+        .unlocked-state {
+            filter: blur(0) grayscale(0);
+            pointer-events: auto;
+        }
     </style>
 </head>
 <body class="font-sans antialiased selection:bg-brand-orange selection:text-white">
@@ -218,6 +232,7 @@
                 <a href="#projects" data-i18n="btn_catalog" class="px-8 py-4 bg-gradient-brand text-white font-bold rounded hover:opacity-90 transition-all shadow-lg shadow-brand-orange/20">
                     View Catalog
                 </a>
+                
                 <a href="#contact" data-i18n="btn_meeting" class="px-8 py-4 bg-transparent border border-gray-600 text-white font-bold rounded hover:border-brand-yellow hover:text-brand-yellow transition-all">
                     Schedule Meeting
                 </a>
@@ -442,101 +457,84 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
                 
-                <!-- Contact Form -->
-                <div class="bg-brand-gray/80 backdrop-blur border border-gray-800 rounded-2xl p-8 lg:p-12 shadow-2xl">
+                <!-- SIMPLIFIED CONTACT FORM (LEFT) -->
+                <div id="leftColumnForm" class="bg-brand-gray/80 backdrop-blur border border-gray-800 rounded-2xl p-8 lg:p-12 shadow-2xl transition-all duration-500">
                     <div class="flex justify-between items-start mb-6">
                         <div>
-                            <h2 data-i18n="contact_title" class="text-3xl font-display font-bold text-white">Get in Touch</h2>
-                            <p data-i18n="contact_desc" class="text-gray-400 mt-2">Ready to start your next engineering project? Send us a message.</p>
+                            <h2 data-i18n="contact_title" class="text-3xl font-display font-bold text-white">Start Here</h2>
+                            <p data-i18n="contact_desc" class="text-gray-400 mt-2">Enter your email to unlock the scheduling calendar.</p>
                         </div>
                     </div>
                     
-                    <form action="https://formsubmit.co/angelillonura@gmail.com" method="POST" class="space-y-6">
-                        <!-- CONFIGURACIÓN FORMSUBMIT -->
+                    <form id="leadForm" onsubmit="handleLeadSubmit(event)" class="space-y-6">
+                        <!-- Hidden fields for FormSubmit -->
                         <input type="hidden" name="_captcha" value="false">
-                        <input type="hidden" name="_template" value="table">
-                        <input type="hidden" name="_subject" value="Nuevo contacto desde Baluarte">
-                        <input type="hidden" name="_next" value="https://tusitio.com/gracias.html">
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label data-i18n="lbl_name" class="block text-sm text-gray-400 mb-2">Nombre</label>
-                                <input type="text" name="Nombre" id="contactName" required class="w-full bg-black/50 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-yellow focus:ring-1 focus:ring-brand-yellow transition-all" placeholder="John Doe">
-                            </div>
-                            <div>
-                                <label data-i18n="lbl_company" class="block text-sm text-gray-400 mb-2">Empresa</label>
-                                <input type="text" name="Empresa" id="contactCompany" required class="w-full bg-black/50 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-yellow focus:ring-1 focus:ring-brand-yellow transition-all" placeholder="Acme Inc.">
-                            </div>
-                        </div>
+                        <input type="hidden" name="_subject" value="Nuevo Lead de Baluarte">
 
                         <div>
                             <label data-i18n="lbl_email" class="block text-sm text-gray-400 mb-2">Email</label>
-                            <input type="email" name="email" id="contactEmail" required class="w-full bg-black/50 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all" placeholder="john@company.com">
-                        </div>
-
-                        <div>
-                            <label data-i18n="lbl_type" class="block text-sm text-gray-400 mb-2">Tipo de Proyecto</label>
-                            <select name="Proyecto" id="contactType" class="w-full bg-black/50 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-red focus:ring-1 focus:ring-brand-red transition-all">
-                                <option data-i18n="opt_auto">Automotriz</option>
-                                <option data-i18n="opt_machine">Maquinaria</option>
-                                <option data-i18n="opt_proto">Prototipado</option>
-                                <option data-i18n="opt_other">Otro</option>
-                            </select>
+                            <input type="email" name="email" required class="w-full bg-black/50 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all" placeholder="john@company.com">
                         </div>
 
                         <div class="relative">
-                            <label data-i18n="lbl_message" class="block text-sm text-gray-400 mb-2">Mensaje</label>
-                            <textarea name="Mensaje" id="contactMessage" rows="4" data-i18n-placeholder="pl_message" required class="w-full bg-black/50 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-yellow focus:ring-1 focus:ring-brand-yellow transition-all" placeholder="Describe your requirements..."></textarea>
-                            
-                            <!-- Gemini AI Feature: Enhance Message -->
-                            <button type="button" onclick="enhanceMessage()" class="absolute right-3 bottom-3 text-xs bg-brand-dark/80 hover:bg-brand-orange text-brand-yellow hover:text-white border border-brand-yellow/30 px-3 py-1.5 rounded-md transition-all flex items-center gap-1.5 backdrop-blur-sm">
-                                <span id="enhanceBtnText" data-i18n="btn_enhance">Enhance with AI ✨</span>
-                                <i id="enhanceIcon" class="fas fa-sparkles"></i>
-                            </button>
+                            <label data-i18n="lbl_message" class="block text-sm text-gray-400 mb-2">Reason (Optional)</label>
+                            <textarea name="Mensaje" rows="3" class="w-full bg-black/50 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-yellow focus:ring-1 focus:ring-brand-yellow transition-all" placeholder="Briefly describe your needs..."></textarea>
                         </div>
 
-                        <button type="submit" data-i18n="btn_send" class="w-full bg-gradient-to-r from-brand-yellow to-brand-orange text-white font-bold py-4 rounded-lg hover:opacity-90 transition-opacity shadow-lg">
-                            Enviar Mensaje
+                        <button type="submit" id="btnSubmitLead" class="w-full bg-gradient-to-r from-brand-yellow to-brand-orange text-white font-bold py-4 rounded-lg hover:opacity-90 transition-opacity shadow-lg flex justify-center items-center gap-2">
+                            <span data-i18n="btn_continue">Continue to Scheduling</span>
+                            <i class="fas fa-arrow-right"></i>
                         </button>
                     </form>
+
+                    <!-- Success State (Hidden Initially) -->
+                    <div id="leadSuccess" class="hidden text-center py-10">
+                        <div class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-check text-green-500 text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-2">All Set!</h3>
+                        <p class="text-gray-400">The calendar on the right is now unlocked. Please select a time that works for you.</p>
+                    </div>
                 </div>
 
-                <!-- Calendar Widget -->
-                <div class="flex flex-col">
-                    <div class="glass-panel rounded-2xl p-8 lg:p-12 h-full flex flex-col">
-                        <h2 data-i18n="cal_title" class="text-3xl font-display font-bold text-white mb-2">Schedule a Meeting</h2>
-                        <p data-i18n="cal_desc" class="text-gray-400 mb-8">Book a technical consultation with our engineers.</p>
-
-                        <!-- Calendar UI -->
-                        <div class="bg-black/40 rounded-xl p-6 border border-gray-700 flex-grow">
-                            <div class="flex justify-between items-center mb-6">
-                                <h3 class="text-white font-bold text-lg" id="currentMonthYear">November 2023</h3>
-                                <div class="flex space-x-2">
-                                    <button class="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 text-white flex items-center justify-center"><i class="fas fa-chevron-left"></i></button>
-                                    <button class="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 text-white flex items-center justify-center"><i class="fas fa-chevron-right"></i></button>
-                                </div>
-                            </div>
-                            
-                            <!-- Days Header -->
-                            <div class="grid grid-cols-7 mb-4 text-center">
-                                <span data-i18n="day_su" class="text-xs font-bold text-gray-500 uppercase">Su</span>
-                                <span data-i18n="day_mo" class="text-xs font-bold text-gray-500 uppercase">Mo</span>
-                                <span data-i18n="day_tu" class="text-xs font-bold text-gray-500 uppercase">Tu</span>
-                                <span data-i18n="day_we" class="text-xs font-bold text-gray-500 uppercase">We</span>
-                                <span data-i18n="day_th" class="text-xs font-bold text-gray-500 uppercase">Th</span>
-                                <span data-i18n="day_fr" class="text-xs font-bold text-gray-500 uppercase">Fr</span>
-                                <span data-i18n="day_sa" class="text-xs font-bold text-gray-500 uppercase">Sa</span>
-                            </div>
-
-                            <!-- Calendar Grid -->
-                            <div class="grid grid-cols-7 gap-2 text-center" id="calendarGrid">
-                                <!-- Days will be injected here -->
-                            </div>
+                <!-- CALENDLY WIDGET AREA (RIGHT - INITIALLY LOCKED) -->
+                <div class="flex flex-col relative">
+                    <!-- Lock Overlay -->
+                    <div id="calendlyLock" class="absolute inset-0 z-30 flex flex-col items-center justify-center text-center p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-gray-800 transition-all duration-700">
+                        <div class="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mb-4 border border-gray-700">
+                            <i class="fas fa-lock text-gray-400 text-2xl"></i>
                         </div>
-                        
-                        <div class="mt-6 p-4 bg-brand-yellow/10 border border-brand-yellow/20 rounded-lg flex items-start">
-                            <i class="fas fa-info-circle text-brand-yellow mt-1 mr-3"></i>
-                            <p data-i18n="cal_info" class="text-sm text-gray-300">Select an available date (highlighted) to request a Google Meet session.</p>
+                        <h3 class="text-xl font-bold text-white mb-2">Calendar Locked</h3>
+                        <p class="text-sm text-gray-400 max-w-xs">Please complete the form on the left to view available meeting times.</p>
+                    </div>
+
+                    <!-- The Calendly Card (Blurred initially) -->
+                    <div id="calendlyCard" class="glass-panel rounded-2xl p-8 lg:p-12 h-full flex flex-col items-center justify-center text-center relative overflow-hidden group locked-state">
+                        <!-- Decorative Background -->
+                        <div class="absolute inset-0 bg-gradient-brand opacity-5 group-hover:opacity-10 transition-opacity duration-700"></div>
+
+                        <div class="relative z-10 w-full">
+                            <div class="w-20 h-20 bg-brand-gray rounded-full flex items-center justify-center mx-auto mb-6 border border-gray-700 shadow-xl group-hover:border-brand-yellow transition-colors duration-500">
+                                <i class="fas fa-calendar-alt text-3xl text-brand-yellow"></i>
+                            </div>
+
+                            <h2 data-i18n="cal_title" class="text-3xl font-display font-bold text-white mb-4">Schedule a Meeting</h2>
+                            <p data-i18n="cal_desc" class="text-gray-400 mb-8 max-w-md mx-auto">Book a technical consultation directly with our engineering team using Calendly.</p>
+
+                            <!-- CALENDLY POPUP BUTTON -->
+                            <button 
+                                onclick="Calendly.initPopupWidget({url: 'https://calendly.com/angelnura253/baluarte'}); return false;"
+                                class="w-full sm:w-auto px-8 py-4 bg-transparent border-2 border-brand-yellow text-brand-yellow font-bold rounded-lg hover:bg-brand-yellow hover:text-black transition-all duration-300 shadow-[0_0_20px_rgba(245,158,11,0.1)] hover:shadow-[0_0_30px_rgba(245,158,11,0.4)] flex items-center justify-center gap-3"
+                            >
+                                <span data-i18n="btn_meeting">Book with Calendly</span>
+                                <i class="fas fa-external-link-alt text-sm"></i>
+                            </button>
+                            
+                            <div class="mt-8 flex items-center justify-center gap-4 text-xs text-gray-500">
+                                <span class="flex items-center gap-1"><i class="fas fa-video"></i> Google Meet</span>
+                                <span class="w-1 h-1 bg-gray-700 rounded-full"></span>
+                                <span class="flex items-center gap-1"><i class="fas fa-globe"></i> Auto-Timezone</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -627,54 +625,6 @@
         </div>
     </div>
 
-    <!-- Meeting Request Modal -->
-    <div id="meetingModal" class="modal fixed inset-0 z-[100] flex items-center justify-center px-4 bg-black/80 backdrop-blur-sm">
-        <div class="bg-brand-gray border border-gray-700 p-8 rounded-2xl max-w-md w-full text-center relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-brand"></div>
-            <div class="w-16 h-16 bg-brand-yellow/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="fas fa-calendar-check text-brand-yellow text-2xl"></i>
-            </div>
-            <h3 data-i18n="modal_meet_title" class="text-2xl font-bold text-white mb-2">Request Meeting</h3>
-            <p class="text-gray-400 mb-4"><span data-i18n="modal_meet_desc">Requesting a slot for</span> <span id="selectedDate" class="text-white font-bold"></span>.</p>
-            
-            <form onsubmit="handleMeeting(event)" class="text-left space-y-4">
-                <!-- Config Fields -->
-                <input type="hidden" name="_template" value="table">
-                <input type="hidden" name="_captcha" value="false">
-                <input type="hidden" name="_subject" value="Meeting Request">
-
-                <div>
-                    <label data-i18n="lbl_time" class="block text-xs font-medium text-gray-500 uppercase mb-1">Preferred Time</label>
-                    <select id="meetingTime" name="time" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white">
-                        <option>09:00 AM</option>
-                        <option>11:00 AM</option>
-                        <option>02:00 PM</option>
-                        <option>04:00 PM</option>
-                    </select>
-                </div>
-                <div>
-                    <label data-i18n="lbl_email" class="block text-xs font-medium text-gray-500 uppercase mb-1">Email</label>
-                    <input id="meetingEmail" name="email" type="email" required class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white" placeholder="you@company.com">
-                </div>
-                 <!-- Added Company & Position to Meeting Modal -->
-                 <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label data-i18n="lbl_company" class="block text-xs font-medium text-gray-500 uppercase mb-1">Company</label>
-                        <input id="meetingCompany" name="company" type="text" required class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white" placeholder="Acme Inc.">
-                    </div>
-                    <div>
-                        <label data-i18n="lbl_position" class="block text-xs font-medium text-gray-500 uppercase mb-1">Job Title</label>
-                        <input id="meetingPosition" name="job_title" type="text" required class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white" placeholder="Manager">
-                    </div>
-                </div>
-                <div class="flex gap-3 mt-6">
-                    <button type="button" onclick="closeModal('meetingModal')" data-i18n="btn_cancel" class="flex-1 py-2 bg-transparent border border-gray-600 text-gray-300 rounded hover:text-white transition-colors">Cancel</button>
-                    <button type="submit" data-i18n="btn_confirm" class="flex-1 py-2 bg-gradient-brand text-white font-bold rounded hover:opacity-90 transition-opacity">Confirm</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- NEW FEATURE: PROJECT DETAIL MODAL -->
     <!-- This is the 70% semi-translucent card -->
     <div id="projectDetailModal" class="modal fixed inset-0 z-[100] flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm">
@@ -733,7 +683,7 @@
                 hero_title_2: "Core of Industry",
                 hero_desc: "Baluarte develops high-precision technology for B2B partners. From automotive fixtures to complex assembly machinery parts.",
                 btn_catalog: "View Catalog",
-                btn_meeting: "Schedule Meeting",
+                btn_meeting: "Book with Calendly",
                 
                 service_1_title: "Automotive Electronics",
                 service_1_desc: "Custom fixtures designed for testing and assembly of sensitive electronic components.",
@@ -765,41 +715,24 @@
                 proj_6_desc: "Machined aluminum enclosure for field communications equipment.",
                 btn_details: "View Details",
 
-                contact_title: "Get in Touch",
-                contact_desc: "Ready to start your next engineering project? Send us a message.",
+                contact_title: "Start Here",
+                contact_desc: "Enter your email to unlock the scheduling calendar.",
                 lbl_name: "Name",
                 lbl_email: "Email",
                 lbl_company: "Company",
                 lbl_position: "Job Title",
                 lbl_type: "Project Type",
-                lbl_message: "Message",
-                pl_message: "Describe your requirements...",
-                opt_auto: "Automotive Fixture",
-                opt_machine: "Machinery Part",
-                opt_proto: "Prototipado",
-                opt_other: "Other",
-                btn_send: "Send Message",
-                btn_sending: "Sending...",
+                lbl_message: "Reason (Optional)",
+                pl_message: "Briefly describe your needs...",
+                btn_continue: "Continue to Scheduling",
+                btn_sending: "Processing...",
                 
                 cal_title: "Schedule a Meeting",
                 cal_desc: "Book a technical consultation with our engineers.",
-                day_su: "Su",
-                day_mo: "Mo",
-                day_tu: "Tu",
-                day_we: "We",
-                day_th: "Th",
-                day_fr: "Fr",
-                day_sa: "Sa",
-                cal_info: "Select an available date (highlighted) to request a Google Meet session.",
                 footer_rights: "All rights reserved.",
                 
                 modal_sent_title: "Message Sent",
                 modal_sent_desc: "Thank you for contacting Baluarte. Our engineering team will review your inquiry and respond within 24 hours.",
-                modal_meet_title: "Request Meeting",
-                modal_meet_desc: "Requesting a slot for",
-                lbl_time: "Preferred Time",
-                btn_cancel: "Cancel",
-                btn_confirm: "Confirm",
                 btn_close: "Close",
 
                 // AI Features
@@ -818,7 +751,7 @@
                 hero_title_2: "Núcleo de la Industria",
                 hero_desc: "Baluarte desarrolla tecnología de alta precisión para socios B2B. Desde dispositivos automotrices hasta piezas complejas para maquinaria de ensamblaje.",
                 btn_catalog: "Ver Catálogo",
-                btn_meeting: "Agendar Reunión",
+                btn_meeting: "Reservar con Calendly",
                 
                 service_1_title: "Electrónica Automotriz",
                 service_1_desc: "Dispositivos personalizados diseñados para pruebas y montaje de componentes electrónicos sensibles.",
@@ -850,41 +783,24 @@
                 proj_6_desc: "Carcasa de aluminio mecanizado para equipos de comunicaciones de campo.",
                 btn_details: "Ver Detalles",
 
-                contact_title: "Contáctanos",
-                contact_desc: "¿Listo para comenzar tu próximo proyecto? Envíanos un mensaje.",
+                contact_title: "Comience Aquí",
+                contact_desc: "Ingrese su correo para desbloquear el calendario.",
                 lbl_name: "Nombre",
                 lbl_email: "Correo",
                 lbl_company: "Empresa",
                 lbl_position: "Puesto",
                 lbl_type: "Tipo de Proyecto",
-                lbl_message: "Mensaje",
-                pl_message: "Describe tus requerimientos...",
-                opt_auto: "Dispositivo Automotriz",
-                opt_machine: "Pieza de Maquinaria",
-                opt_proto: "Prototipado",
-                opt_other: "Otro",
-                btn_send: "Enviar Mensaje",
-                btn_sending: "Enviando...",
+                lbl_message: "Motivo (Opcional)",
+                pl_message: "Describa brevemente sus necesidades...",
+                btn_continue: "Continuar a Reserva",
+                btn_sending: "Procesando...",
                 
                 cal_title: "Agendar Reunión",
                 cal_desc: "Reserva una consulta técnica con nuestros ingenieros.",
-                day_su: "Do",
-                day_mo: "Lu",
-                day_tu: "Ma",
-                day_we: "Mi",
-                day_th: "Ju",
-                day_fr: "Vi",
-                day_sa: "Sa",
-                cal_info: "Selecciona una fecha disponible (resaltada) para solicitar una sesión de Google Meet.",
                 footer_rights: "Todos los derechos reservados.",
                 
                 modal_sent_title: "Mensaje Enviado",
                 modal_sent_desc: "Gracias por contactar a Baluarte. Nuestro equipo de ingeniería revisará su consulta y responderá dentro de 24 horas.",
-                modal_meet_title: "Solicitar Reunión",
-                modal_meet_desc: "Solicitando espacio para",
-                lbl_time: "Hora Preferida",
-                btn_cancel: "Cancelar",
-                btn_confirm: "Confirmar",
                 btn_close: "Cerrar",
 
                  // AI Features
@@ -924,10 +840,56 @@
                     el.placeholder = translations[currentLang][key];
                 }
             });
-
-            // Re-render calendar to update month name
-            initCalendar();
         }
+
+        // --- Lead Form Logic (New) ---
+        async function handleLeadSubmit(e) {
+            e.preventDefault();
+            const form = e.target;
+            const btn = document.getElementById('btnSubmitLead');
+            const originalTextKey = btn.querySelector('span').getAttribute('data-i18n');
+            const originalText = translations[currentLang][originalTextKey];
+            
+            // Set loading state
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${translations[currentLang]['btn_sending']}`;
+            btn.disabled = true;
+
+            const formData = new FormData(form);
+
+            // Send to FormSubmit via AJAX
+            try {
+                const response = await fetch("https://formsubmit.co/ajax/angelillonura@gmail.com", {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (response.ok) {
+                    // UI Transition: Unlock Right Side
+                    document.getElementById('leadForm').classList.add('hidden');
+                    document.getElementById('leadSuccess').classList.remove('hidden');
+                    
+                    // Fade out Lock Overlay
+                    const lock = document.getElementById('calendlyLock');
+                    lock.classList.add('opacity-0', 'pointer-events-none');
+                    
+                    // Unblur Card
+                    const card = document.getElementById('calendlyCard');
+                    card.classList.remove('locked-state');
+                    card.classList.add('unlocked-state');
+
+                } else {
+                    alert("Error submitting form. Please try again.");
+                    btn.innerHTML = `<span data-i18n="btn_continue">${originalText}</span> <i class="fas fa-arrow-right"></i>`;
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                console.error("Form Error:", error);
+                alert("Network error. Please try again.");
+                btn.innerHTML = `<span data-i18n="btn_continue">${originalText}</span> <i class="fas fa-arrow-right"></i>`;
+                btn.disabled = false;
+            }
+        }
+
 
         // --- Three.js Background Animation ---
         const initThreeJS = () => {
@@ -1038,104 +1000,9 @@
             menu.classList.toggle('hidden');
         });
 
-        // Calendar Generation
-        const initCalendar = () => {
-            const grid = document.getElementById('calendarGrid');
-            const dateLabel = document.getElementById('currentMonthYear');
-            grid.innerHTML = ''; // Clear previous
-            
-            const now = new Date();
-            
-            const monthNamesEn = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            const monthNamesEs = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-            
-            const monthNames = currentLang === 'en' ? monthNamesEn : monthNamesEs;
-            
-            dateLabel.innerText = `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
-            
-            const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
-
-            for (let i = 0; i < firstDay; i++) {
-                const empty = document.createElement('div');
-                grid.appendChild(empty);
-            }
-
-            for (let i = 1; i <= daysInMonth; i++) {
-                const btn = document.createElement('button');
-                btn.className = "h-10 w-full rounded-lg text-sm font-medium transition-all hover:bg-brand-orange hover:text-white focus:outline-none focus:ring-2 focus:ring-brand-yellow";
-                
-                if (i === now.getDate()) {
-                    btn.classList.add('bg-brand-yellow', 'text-black', 'font-bold'); 
-                } else if (i < now.getDate()) {
-                    btn.classList.add('text-gray-600', 'cursor-not-allowed'); 
-                    btn.disabled = true;
-                } else {
-                    btn.classList.add('text-white', 'bg-gray-800/50');
-                    btn.onclick = () => openMeetingModal(i, monthNames[now.getMonth()], now.getFullYear());
-                }
-                
-                btn.innerText = i;
-                grid.appendChild(btn);
-            }
-        };
 
         // Modal Handlers
         // REMOVED handleContact(e) - replaced by form action="POST"
-
-        function openMeetingModal(day, month, year) {
-            document.getElementById('selectedDate').innerText = `${month} ${day}, ${year}`;
-            document.getElementById('meetingModal').classList.add('active');
-        }
-
-        async function handleMeeting(e) {
-            e.preventDefault();
-            const form = e.target;
-            const btn = form.querySelector('button[type="submit"]');
-            const originalTextKey = btn.getAttribute('data-i18n');
-            const originalText = translations[currentLang][originalTextKey];
-            btn.innerText = "Sending...";
-            btn.disabled = true;
-            
-            // Gather FormData from inputs with names
-            const formData = new FormData(form);
-            
-            // Append the date manually since it's in a SPAN, not an input
-            const dateText = document.getElementById('selectedDate').innerText;
-            formData.append('meeting_date', dateText);
-
-             // Use FormSubmit AJAX
-             try {
-                const response = await fetch("https://formsubmit.co/ajax/angelillonura@gmail.com", {
-                    method: "POST",
-                    body: formData
-                });
-
-                if (response.ok) {
-                    closeModal('meetingModal');
-                    setTimeout(() => {
-                        const successTitle = document.querySelector('#successModal h3');
-                        const successDesc = document.querySelector('#successModal p');
-                        
-                        successTitle.innerText = currentLang === 'en' ? "Meeting Requested" : "Reunión Solicitada";
-                        successDesc.innerText = currentLang === 'en' 
-                            ? "We have received your request and will email you a calendar invite shortly." 
-                            : "Hemos recibido su solicitud y le enviaremos una invitación de calendario pronto.";
-                        
-                        document.getElementById('successModal').classList.add('active');
-                        form.reset();
-                    }, 500);
-                } else {
-                    alert("Error sending request.");
-                }
-            } catch (error) {
-                console.error("FormSubmit Error:", error);
-                alert("Error sending request.");
-            } finally {
-                btn.innerText = originalText;
-                btn.disabled = false;
-            }
-        }
 
         function closeModal(id) {
             document.getElementById(id).classList.remove('active');
@@ -1430,59 +1297,20 @@
             if(el) el.remove();
         }
 
-        // Feature 2: Message Enhancer
-        async function enhanceMessage() {
-            const textarea = document.getElementById('contactMessage');
-            const originalText = textarea.value;
-            const btnText = document.getElementById('enhanceBtnText');
-            const icon = document.getElementById('enhanceIcon');
-            
-            if (!originalText) {
-                // Shake effect if empty
-                textarea.classList.add('ring-2', 'ring-red-500');
-                setTimeout(() => textarea.classList.remove('ring-2', 'ring-red-500'), 500);
-                return;
-            }
-
-            // UI Loading State
-            const originalBtnLabel = btnText.innerText;
-            btnText.innerText = translations[currentLang]['ai_enhancing'];
-            icon.classList.remove('fa-sparkles');
-            icon.classList.add('fa-spinner', 'fa-spin');
-
-            const systemPrompt = `
-                You are a professional engineering technical writer.
-                Rewrite the user's inquiry to be more professional, precise, and technical using standard industry terminology.
-                Keep it concise.
-                Maintain the same language as the input (English or Spanish).
-                Do not add introductory text like "Here is the rewritten version:". Just give the text.
-            `;
-
-            const enhancedText = await callGemini(originalText, systemPrompt);
-
-            // Update UI
-            textarea.value = enhancedText;
-            btnText.innerText = originalBtnLabel;
-            icon.classList.remove('fa-spinner', 'fa-spin');
-            icon.classList.add('fa-check');
-            
-            // Flash effect on textarea
-            textarea.classList.add('bg-brand-orange/20');
-            setTimeout(() => {
-                textarea.classList.remove('bg-brand-orange/20');
-                icon.classList.remove('fa-check');
-                icon.classList.add('fa-sparkles');
-            }, 1000);
-        }
-
         // Initialize
         window.addEventListener('DOMContentLoaded', () => {
             initThreeJS();
-            initCalendar();
+            // initCalendar(); // Removed legacy calendar
             // En ES
             document.getElementById('lang-btn-text').innerText = "ES";
             document.getElementById('lang-btn-text-mobile').innerText = "ES";
         });
+        
+        // Add Calendly Script dynamically (Backup)
+        const script = document.createElement('script');
+        script.src = "https://assets.calendly.com/assets/external/widget.js";
+        script.async = true;
+        document.body.appendChild(script);
 
     </script>
 </body>

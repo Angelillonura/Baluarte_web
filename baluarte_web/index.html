@@ -536,7 +536,7 @@
                         
                         <div class="mt-6 p-4 bg-brand-yellow/10 border border-brand-yellow/20 rounded-lg flex items-start">
                             <i class="fas fa-info-circle text-brand-yellow mt-1 mr-3"></i>
-                            <p data-i18n="cal_info" class="text-sm text-gray-300">Select an available date (highlighted) to request a Google Meet session.</p>
+                            <p data-i18n="cal_info" class="text-sm text-gray-300">Select an available date (highlighted) to request a Google Meet session. Advance notice of 2 days required.</p>
                         </div>
                     </div>
                 </div>
@@ -614,19 +614,6 @@
     </div>
 
     <!-- Modals -->
-    <!-- Message Success Modal -->
-    <div id="successModal" class="modal fixed inset-0 z-[100] flex items-center justify-center px-4 bg-black/80 backdrop-blur-sm">
-        <div class="bg-brand-gray border border-gray-700 p-8 rounded-2xl max-w-md w-full text-center relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-brand"></div>
-            <div class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="fas fa-check text-green-500 text-2xl"></i>
-            </div>
-            <h3 data-i18n="modal_sent_title" class="text-2xl font-bold text-white mb-2">Message Sent</h3>
-            <p data-i18n="modal_sent_desc" class="text-gray-400 mb-6">Thank you for contacting Baluarte. Our engineering team will review your inquiry and respond within 24 hours.</p>
-            <button onclick="closeModal('successModal')" data-i18n="btn_close" class="w-full py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors">Close</button>
-        </div>
-    </div>
-
     <!-- Meeting Request Modal -->
     <div id="meetingModal" class="modal fixed inset-0 z-[100] flex items-center justify-center px-4 bg-black/80 backdrop-blur-sm">
         <div class="bg-brand-gray border border-gray-700 p-8 rounded-2xl max-w-md w-full text-center relative overflow-hidden">
@@ -635,26 +622,22 @@
                 <i class="fas fa-calendar-check text-brand-yellow text-2xl"></i>
             </div>
             <h3 data-i18n="modal_meet_title" class="text-2xl font-bold text-white mb-2">Request Meeting</h3>
-            <p class="text-gray-400 mb-4"><span data-i18n="modal_meet_desc">Requesting a slot for</span> <span id="selectedDate" class="text-white font-bold"></span>.</p>
+            <p class="text-gray-400 mb-4"><span data-i18n="modal_meet_desc">Requesting a slot for</span> <span id="selectedDateDisplay" class="text-white font-bold"></span>.</p>
             
-            <form onsubmit="handleMeeting(event)" class="text-left space-y-4">
-                <!-- Config Fields -->
-                <input type="hidden" name="_template" value="table">
-                <input type="hidden" name="_captcha" value="false">
-                <input type="hidden" name="_subject" value="Meeting Request">
-
+            <form onsubmit="openGoogleCalendar(event)" class="text-left space-y-4">
                 <div>
                     <label data-i18n="lbl_time" class="block text-xs font-medium text-gray-500 uppercase mb-1">Preferred Time</label>
                     <select id="meetingTime" name="time" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white">
-                        <option>09:00 AM</option>
-                        <option>11:00 AM</option>
-                        <option>02:00 PM</option>
-                        <option>04:00 PM</option>
+                        <option value="090000">09:00 AM</option>
+                        <option value="110000">11:00 AM</option>
+                        <option value="140000">02:00 PM</option>
+                        <option value="160000">04:00 PM</option>
                     </select>
                 </div>
                 <div>
                     <label data-i18n="lbl_email" class="block text-xs font-medium text-gray-500 uppercase mb-1">Email</label>
                     <input id="meetingEmail" name="email" type="email" required class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white" placeholder="you@company.com">
+                    <p id="emailError" class="text-red-500 text-xs mt-1 hidden">Please enter a valid email address.</p>
                 </div>
                  <!-- Added Company & Position to Meeting Modal -->
                  <div class="grid grid-cols-2 gap-3">
@@ -790,7 +773,7 @@
                 day_th: "Th",
                 day_fr: "Fr",
                 day_sa: "Sa",
-                cal_info: "Select an available date (highlighted) to request a Google Meet session.",
+                cal_info: "Select an available date (highlighted) to request a Google Meet session. Advance notice of 2 days required.",
                 footer_rights: "All rights reserved.",
                 
                 modal_sent_title: "Message Sent",
@@ -875,7 +858,7 @@
                 day_th: "Ju",
                 day_fr: "Vi",
                 day_sa: "Sa",
-                cal_info: "Selecciona una fecha disponible (resaltada) para solicitar una sesión de Google Meet.",
+                cal_info: "Selecciona una fecha disponible (resaltada) para solicitar una sesión de Google Meet. Se requiere 2 días de antelación.",
                 footer_rights: "Todos los derechos reservados.",
                 
                 modal_sent_title: "Mensaje Enviado",
@@ -897,6 +880,13 @@
         };
 
         let currentLang = 'en';
+
+        // Global State for Selected Date
+        let selectedDateState = {
+            day: null,
+            month: null,
+            year: null
+        };
 
         function toggleLanguage() {
             currentLang = currentLang === 'en' ? 'es' : 'en';
@@ -1046,6 +1036,12 @@
             
             const now = new Date();
             
+            // --- 2-DAY ADVANCE NOTICE LOGIC ---
+            // Create a date object for the minimum allowed booking date (Today + 2 days)
+            const minBookableDate = new Date();
+            minBookableDate.setDate(now.getDate() + 2);
+            minBookableDate.setHours(0, 0, 0, 0); // Clear time for accurate comparison
+
             const monthNamesEn = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             const monthNamesEs = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
             
@@ -1063,16 +1059,28 @@
 
             for (let i = 1; i <= daysInMonth; i++) {
                 const btn = document.createElement('button');
-                btn.className = "h-10 w-full rounded-lg text-sm font-medium transition-all hover:bg-brand-orange hover:text-white focus:outline-none focus:ring-2 focus:ring-brand-yellow";
+                btn.className = "h-10 w-full rounded-lg text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-brand-yellow";
                 
+                // Construct the specific date for this button iteration
+                const thisDate = new Date(now.getFullYear(), now.getMonth(), i);
+                thisDate.setHours(0,0,0,0);
+
                 if (i === now.getDate()) {
-                    btn.classList.add('bg-brand-yellow', 'text-black', 'font-bold'); 
-                } else if (i < now.getDate()) {
-                    btn.classList.add('text-gray-600', 'cursor-not-allowed'); 
+                    // Today (Indicator)
+                    btn.classList.add('bg-gray-700', 'text-white', 'border', 'border-brand-yellow/50');
                     btn.disabled = true;
-                } else {
-                    btn.classList.add('text-white', 'bg-gray-800/50');
-                    btn.onclick = () => openMeetingModal(i, monthNames[now.getMonth()], now.getFullYear());
+                    btn.title = "Today";
+                } 
+                // Check if the date is in the past OR less than 2 days in the future
+                else if (thisDate < minBookableDate) {
+                    btn.classList.add('text-gray-600', 'bg-gray-900/30', 'cursor-not-allowed');
+                    btn.disabled = true;
+                } 
+                else {
+                    // Available
+                    btn.classList.add('text-white', 'bg-gray-800/50', 'hover:bg-brand-orange');
+                    // Pass specific values instead of strings
+                    btn.onclick = () => openMeetingModal(i, now.getMonth(), now.getFullYear());
                 }
                 
                 btn.innerText = i;
@@ -1080,74 +1088,86 @@
             }
         };
 
-        // Modal Handlers
-        // REMOVED handleContact(e) - replaced by form action="POST"
+        function openMeetingModal(day, monthIndex, year) {
+            // Store state
+            selectedDateState = { day, month: monthIndex, year };
 
-        function openMeetingModal(day, month, year) {
-            document.getElementById('selectedDate').innerText = `${month} ${day}, ${year}`;
+            // Display Logic based on language
+            const monthNamesEn = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const monthNamesEs = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            const monthName = currentLang === 'en' ? monthNamesEn[monthIndex] : monthNamesEs[monthIndex];
+            
+            document.getElementById('selectedDateDisplay').innerText = `${monthName} ${day}, ${year}`;
             document.getElementById('meetingModal').classList.add('active');
+            
+            // Reset error messages
+            document.getElementById('emailError').classList.add('hidden');
         }
 
-        async function handleMeeting(e) {
+        // --- GOOGLE CALENDAR LOGIC & EMAIL VALIDATION ---
+        function openGoogleCalendar(e) {
             e.preventDefault();
-            const form = e.target;
-            const btn = form.querySelector('button[type="submit"]');
-            const originalTextKey = btn.getAttribute('data-i18n');
-            const originalText = translations[currentLang][originalTextKey];
-            btn.innerText = "Sending...";
-            btn.disabled = true;
             
-            // Gather FormData from inputs with names
-            const formData = new FormData(form);
-            
-            // Append the date manually since it's in a SPAN, not an input
-            const dateText = document.getElementById('selectedDate').innerText;
-            formData.append('meeting_date', dateText);
+            const emailInput = document.getElementById('meetingEmail');
+            const email = emailInput.value;
+            const timeStr = document.getElementById('meetingTime').value; // e.g. "090000"
+            const company = document.getElementById('meetingCompany').value;
+            const position = document.getElementById('meetingPosition').value;
 
-             // Use FormSubmit AJAX
-             try {
-                const response = await fetch("https://formsubmit.co/ajax/angelillonura@gmail.com", {
-                    method: "POST",
-                    body: formData
-                });
-
-                if (response.ok) {
-                    closeModal('meetingModal');
-                    setTimeout(() => {
-                        const successTitle = document.querySelector('#successModal h3');
-                        const successDesc = document.querySelector('#successModal p');
-                        
-                        successTitle.innerText = currentLang === 'en' ? "Meeting Requested" : "Reunión Solicitada";
-                        successDesc.innerText = currentLang === 'en' 
-                            ? "We have received your request and will email you a calendar invite shortly." 
-                            : "Hemos recibido su solicitud y le enviaremos una invitación de calendario pronto.";
-                        
-                        document.getElementById('successModal').classList.add('active');
-                        form.reset();
-                    }, 500);
-                } else {
-                    alert("Error sending request.");
-                }
-            } catch (error) {
-                console.error("FormSubmit Error:", error);
-                alert("Error sending request.");
-            } finally {
-                btn.innerText = originalText;
-                btn.disabled = false;
+            // 1. IMPROVED EMAIL VERIFICATION
+            // Regex to check for standard email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                const errorMsg = document.getElementById('emailError');
+                errorMsg.classList.remove('hidden');
+                emailInput.focus();
+                emailInput.classList.add('border-red-500');
+                setTimeout(() => emailInput.classList.remove('border-red-500'), 2000);
+                return;
             }
+
+            // 2. CONSTRUCT DATES FOR URL
+            // Ensure single digits get leading zeros
+            const pad = (n) => n < 10 ? '0' + n : n;
+            
+            // Format: YYYYMMDD
+            const dateStr = `${selectedDateState.year}${pad(selectedDateState.month + 1)}${pad(selectedDateState.day)}`;
+            
+            const startDateTime = `${dateStr}T${timeStr}`;
+            
+            // Calculate end time (Start + 1 hour)
+            // Parse the HHMMSS from timeStr
+            let hour = parseInt(timeStr.substring(0, 2));
+            let nextHour = hour + 1;
+            // Handle day overflow conceptually, though for simple business hours 16:00 -> 17:00 is fine
+            const endHourStr = pad(nextHour) + timeStr.substring(2); 
+            const endDateTime = `${dateStr}T${endHourStr}`;
+
+            // 3. GENERATE URL
+            const title = encodeURIComponent(`Reunión Baluarte - ${company}`);
+            const details = encodeURIComponent(
+                `Reunión técnica solicitada por ${email}.\n` +
+                `Empresa: ${company}\n` +
+                `Cargo: ${position}\n\n` +
+                `Contexto: Discusión sobre ingeniería y manufactura.`
+            );
+            
+            const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDateTime}/${endDateTime}&details=${details}&add=${email}`;
+
+            // Open in new tab
+            window.open(url, "_blank");
+
+            // Close modal
+            closeModal('meetingModal');
         }
 
         function closeModal(id) {
             document.getElementById(id).classList.remove('active');
-            if(id === 'successModal') {
-                updateContent(); 
-            }
         }
 
         window.onclick = function(event) {
             if (event.target.classList.contains('modal')) {
                 event.target.classList.remove('active');
-                if(event.target.id === 'successModal') updateContent();
             }
         }
 
@@ -1487,4 +1507,3 @@
     </script>
 </body>
 </html>
-

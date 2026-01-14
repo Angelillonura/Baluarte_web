@@ -67,11 +67,9 @@
 </head>
 <body class="font-sans antialiased selection:bg-brand-orange selection:text-white">
 
-    <div id="splash-screen" class="fixed inset-0 z-[100] flex items-center justify-center transition-opacity duration-1000">
-        <video id="splash-video" muted playsinline autoplay class="w-full max-w-lg h-auto object-contain">
-            <source src="img/Animación_De_Logo_Generada.mp4" type="video/mp4">
-            <span class="text-white text-2xl font-bold tracking-widest animate-pulse">BALUARTE</span>
-        </video>
+     <div id="splash-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center transition-opacity duration-1000 bg-black">
+        <img src="img/Animación_De_Logo_Generada.gif" alt="Baluarte Animation" class="w-full max-w-lg h-auto object-contain mb-4">
+        <span class="text-white text-2xl font-bold tracking-widest animate-pulse">BALUARTE</span>
     </div>
 
     <div id="canvas-container"></div>
@@ -81,7 +79,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
                 <div class="flex-shrink-0 flex items-center gap-3 cursor-pointer" onclick="window.scrollTo(0,0)">
-                    <img src="img/OIP.webp" alt="Baluarte Logo" class="h-10 w-auto object-contain">
+                    <img src="img/OIP.png" alt="Baluarte Logo" class="h-10 w-auto object-contain">
                     <span class="font-display font-bold text-2xl tracking-tight text-white">BALUARTE</span>
                 </div>
                 <div class="hidden md:flex space-x-8 items-center">
@@ -886,3 +884,4 @@
     </script>
 </body>
 </html>
+

@@ -7,7 +7,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
 <script>
@@ -62,35 +62,29 @@ body{background-color:#050505;color:#ffffff;overflow-x:hidden}
 .locked-state{filter:blur(8px) grayscale(0.8);pointer-events:none;transition:all 0.8s ease}
 .unlocked-state{filter:blur(0) grayscale(0);pointer-events:auto}
 
-/* ESTILOS DEL PRELOADER */
+/* ESTILOS DEL PRELOADER MEJORADOS */
 #preloader {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #ffffff; /* INICIO BLANCO */
+    background-color: #ffffff;
     z-index: 9999;
     display: flex;
     justify-content: center;
     align-items: center;
-    /* Transición suave para el fondo y la opacidad */
     transition: background-color 1.5s ease-in-out, opacity 1s ease-out;
 }
-
 #preloader img {
-    transition: opacity 1s ease-in-out;
+    transition: opacity 0.8s ease-in-out;
 }
-
-/* Estado Intermedio: Fondo negro, GIF se oculta para no ver el cuadro blanco */
-#preloader.fade-to-black {
-    background-color: #000000;
-}
-#preloader.fade-to-black img {
+#preloader.gif-fade-out img {
     opacity: 0;
 }
-
-/* Estado Final: Todo el contenedor desaparece */
+#preloader.bg-fade-to-black {
+    background-color: #000000;
+}
 #preloader.finish {
     opacity: 0;
     pointer-events: none;
@@ -105,12 +99,18 @@ body{background-color:#050505;color:#ffffff;overflow-x:hidden}
 
 <div id="canvas-container"></div>
 <div id="focus-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[55] opacity-0 pointer-events-none transition-opacity duration-500"></div>
-<nav class="fixed w-full z-50 top-0 transition-all duration-300" id="navbar">
+
+<nav class="fixed w-full z-50 top-0 transition-all duration-500 ease-in-out" id="navbar">
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 <div class="flex justify-between items-center h-24">
-<div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="window.scrollTo(0,0)">
-<img src="img/OIP.png" alt="Proyectos de Integración BALUARTE" class="h-14 w-auto object-contain">
+<div class="flex-shrink-0 flex items-center gap-4 cursor-pointer" onclick="window.scrollTo(0,0)">
+<img src="img/OIP.png" alt="Baluarte Logo" class="h-14 w-auto object-contain">
+<div class="flex flex-col -space-y-1 leading-none">
+    <span class="text-gray-300 text-[10px] sm:text-xs uppercase tracking-wider font-medium">Proyectos de integración</span>
+    <span class="text-brand-red font-display font-black text-xl sm:text-2xl tracking-wide">BALUARTE</span>
 </div>
+</div>
+
 <div class="hidden md:flex space-x-8 items-center">
 <a href="#projects" data-i18n="nav_projects" class="text-gray-300 hover:text-brand-yellow transition-colors text-sm uppercase tracking-widest font-medium">Projects</a>
 <a href="#services" data-i18n="nav_services" class="text-gray-300 hover:text-brand-yellow transition-colors text-sm uppercase tracking-widest font-medium">Services</a>
@@ -139,6 +139,7 @@ Contact Us
 </div>
 </div>
 </nav>
+
 <section class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
 <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce text-gray-500">
 <i class="fas fa-chevron-down text-xl"></i>
@@ -394,8 +395,12 @@ Explore our recent developments in industrial automation and tooling.
 </section>
 <footer class="bg-black py-12 border-t border-gray-900 relative z-20">
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
-<div class="flex items-center gap-2 mb-4 md:mb-0">
-<img src="img/OIP.png" alt="Proyectos de Integración BALUARTE" class="h-10 w-auto object-contain">
+<div class="flex items-center gap-3 mb-4 md:mb-0">
+<img src="img/OIP.png" alt="Baluarte Logo" class="h-10 w-auto object-contain">
+<div class="flex flex-col -space-y-1 leading-none">
+    <span class="text-gray-500 text-[10px] uppercase tracking-wider font-medium">Proyectos de integración</span>
+    <span class="text-brand-red font-display font-bold text-xl tracking-wide">BALUARTE</span>
+</div>
 </div>
 <div class="text-gray-500 text-sm">
 &copy; 2024 Baluarte Engineering. <span data-i18n="footer_rights">All rights reserved.</span>
@@ -736,12 +741,14 @@ renderer.render(scene, camera);
 };
 animate();
 };
+// EFECTO DE CRISTAL HÚMEDO EN SCROLL
 window.addEventListener('scroll', () => {
 const nav = document.getElementById('navbar');
 if (window.scrollY > 50) {
-nav.classList.add('bg-black/90', 'backdrop-blur-md', 'border-b', 'border-gray-800', 'shadow-lg');
+// Cambiado a bg-black/60 y backdrop-blur-xl para efecto cristal húmedo
+nav.classList.add('bg-black/60', 'backdrop-blur-xl', 'border-b', 'border-white/10', 'shadow-lg');
 } else {
-nav.classList.remove('bg-black/90', 'backdrop-blur-md', 'border-b', 'border-gray-800', 'shadow-lg');
+nav.classList.remove('bg-black/60', 'backdrop-blur-xl', 'border-b', 'border-white/10', 'shadow-lg');
 }
 });
 const btn = document.getElementById('mobile-menu-btn');
@@ -995,14 +1002,23 @@ window.addEventListener('DOMContentLoaded', () => {
 initThreeJS();
 document.getElementById('lang-btn-text').innerText = "ES";
 document.getElementById('lang-btn-text-mobile').innerText = "ES";
+// SECUENCIA DE PRELOADER AJUSTADA
 setTimeout(() => {
 const loader = document.getElementById('preloader');
-loader.classList.add('fade-to-black');
+// Paso 1: Desvanecer solo el GIF (a los 3.5s)
+loader.classList.add('gif-fade-out');
+
 setTimeout(() => {
-loader.classList.add('finish');
-setTimeout(() => loader.remove(), 1000);
-}, 1500);
-}, 4000); 
+    // Paso 2: Cambiar el fondo a negro (a los 4.5s) -> El GIF ya no se ve
+    loader.classList.add('bg-fade-to-black');
+
+    setTimeout(() => {
+            // Paso 3: Desvanecer el contenedor completo (a los 6.0s)
+        loader.classList.add('finish');
+        setTimeout(() => loader.remove(), 1000);
+    }, 1500);
+}, 1000); // Espera 1s después de que el GIF empiece a desvanecerse
+}, 3500);
 });
 const script = document.createElement('script');
 script.src = "https://assets.calendly.com/assets/external/widget.js";

@@ -62,7 +62,7 @@ body{background-color:#050505;color:#ffffff;overflow-x:hidden}
 .locked-state{filter:blur(8px) grayscale(0.8);pointer-events:none;transition:all 0.8s ease}
 .unlocked-state{filter:blur(0) grayscale(0);pointer-events:auto}
 
-/* ESTILOS DEL PRELOADER MEJORADOS */
+/* ESTILOS DEL PRELOADER AJUSTADOS */
 #preloader {
     position: fixed;
     top: 0;
@@ -74,10 +74,11 @@ body{background-color:#050505;color:#ffffff;overflow-x:hidden}
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: background-color 1.5s ease-in-out, opacity 1s ease-out;
+    /* Transición mucho más rápida para el fondo (0.8s en lugar de 1.5s) */
+    transition: background-color 0.8s ease-in-out, opacity 0.8s ease-out;
 }
 #preloader img {
-    transition: opacity 0.8s ease-in-out;
+    transition: opacity 0.5s ease-in-out;
 }
 #preloader.gif-fade-out img {
     opacity: 0;
@@ -107,7 +108,7 @@ body{background-color:#050505;color:#ffffff;overflow-x:hidden}
 <img src="img/OIP.png" alt="Baluarte Logo" class="h-14 w-auto object-contain">
 <div class="flex flex-col -space-y-1 leading-none">
     <span class="text-gray-300 text-[10px] sm:text-xs uppercase tracking-wider font-medium">Proyectos de integración</span>
-    <span class="text-brand-red font-display font-black text-xl sm:text-2xl tracking-wide">BALUARTE</span>
+    <span class="text-brand-red font-display font-black text-2xl sm:text-3xl tracking-wide">BALUARTE</span>
 </div>
 </div>
 
@@ -741,14 +742,14 @@ renderer.render(scene, camera);
 };
 animate();
 };
-// EFECTO DE CRISTAL HÚMEDO EN SCROLL
+// EFECTO CRISTAL HÚMEDO (BLANCO 10%)
 window.addEventListener('scroll', () => {
 const nav = document.getElementById('navbar');
 if (window.scrollY > 50) {
-// Cambiado a bg-black/60 y backdrop-blur-xl para efecto cristal húmedo
-nav.classList.add('bg-black/60', 'backdrop-blur-xl', 'border-b', 'border-white/10', 'shadow-lg');
+// 'bg-white/10' representa ese "1.2" de blancura sobre 10
+nav.classList.add('bg-white/10', 'backdrop-blur-xl', 'border-b', 'border-white/10', 'shadow-lg');
 } else {
-nav.classList.remove('bg-black/60', 'backdrop-blur-xl', 'border-b', 'border-white/10', 'shadow-lg');
+nav.classList.remove('bg-white/10', 'backdrop-blur-xl', 'border-b', 'border-white/10', 'shadow-lg');
 }
 });
 const btn = document.getElementById('mobile-menu-btn');
@@ -1002,23 +1003,23 @@ window.addEventListener('DOMContentLoaded', () => {
 initThreeJS();
 document.getElementById('lang-btn-text').innerText = "ES";
 document.getElementById('lang-btn-text-mobile').innerText = "ES";
-// SECUENCIA DE PRELOADER AJUSTADA
+// SECUENCIA DE PRELOADER ACELERADA
 setTimeout(() => {
 const loader = document.getElementById('preloader');
-// Paso 1: Desvanecer solo el GIF (a los 3.5s)
+// 1. Desvanecer GIF (inicio a 3.0s)
 loader.classList.add('gif-fade-out');
 
 setTimeout(() => {
-    // Paso 2: Cambiar el fondo a negro (a los 4.5s) -> El GIF ya no se ve
+    // 2. Fondo a negro (solo 0.6s después de que el GIF empieza a desvanecerse)
     loader.classList.add('bg-fade-to-black');
 
     setTimeout(() => {
-            // Paso 3: Desvanecer el contenedor completo (a los 6.0s)
+            // 3. Desaparecer todo (solo 1s para completar la transición de fondo)
         loader.classList.add('finish');
         setTimeout(() => loader.remove(), 1000);
-    }, 1500);
-}, 1000); // Espera 1s después de que el GIF empiece a desvanecerse
-}, 3500);
+    }, 1000); // Antes era 1500
+}, 600); // Antes era 1000
+}, 3000); // Antes era 3500
 });
 const script = document.createElement('script');
 script.src = "https://assets.calendly.com/assets/external/widget.js";

@@ -103,9 +103,9 @@ body{background-color:#050505;color:#ffffff;overflow-x:hidden}
 <div class="flex justify-between items-center h-24">
 <div class="flex-shrink-0 flex items-center gap-4 cursor-pointer" onclick="window.scrollTo(0,0)">
 <img src="img/OIP.png" alt="Baluarte Logo" class="h-14 w-auto object-contain">
-<div class="flex flex-col justify-center">
-    <span class="text-gray-300 text-[0.65rem] uppercase tracking-normal font-medium leading-tight">Proyectos de integración</span>
-    <span class="text-brand-red font-display font-black text-3xl tracking-[0.16em] leading-none">BALUARTE</span>
+<div class="flex flex-col -space-y-1 leading-none">
+    <span class="text-gray-300 text-[10px] sm:text-xs uppercase tracking-wider font-medium">Proyectos de integración</span>
+    <span class="text-brand-red font-display font-black text-2xl sm:text-3xl tracking-wide">BALUARTE</span>
 </div>
 </div>
 
@@ -395,9 +395,9 @@ Explore our recent developments in industrial automation and tooling.
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
 <div class="flex items-center gap-3 mb-4 md:mb-0">
 <img src="img/OIP.png" alt="Baluarte Logo" class="h-10 w-auto object-contain">
-<div class="flex flex-col justify-center">
-    <span class="text-gray-500 text-[0.65rem] uppercase tracking-normal font-medium leading-tight">Proyectos de integración</span>
-    <span class="text-brand-red font-display font-bold text-xl tracking-[0.16em] leading-none">BALUARTE</span>
+<div class="flex flex-col -space-y-1 leading-none">
+    <span class="text-gray-500 text-[10px] uppercase tracking-wider font-medium">Proyectos de integración</span>
+    <span class="text-brand-red font-display font-bold text-xl tracking-wide">BALUARTE</span>
 </div>
 </div>
 <div class="text-gray-500 text-sm">
@@ -1006,6 +1006,7 @@ loader.classList.add('bg-fade-to-black');
 setTimeout(() => {
 loader.classList.add('finish');
 setTimeout(() => loader.remove(), 1000);
+}, 1000); 
 }, 600); 
 }, 3000); 
 });

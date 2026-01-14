@@ -61,8 +61,6 @@ body{background-color:#050505;color:#ffffff;overflow-x:hidden}
 @keyframes typing{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
 .locked-state{filter:blur(8px) grayscale(0.8);pointer-events:none;transition:all 0.8s ease}
 .unlocked-state{filter:blur(0) grayscale(0);pointer-events:auto}
-
-/* ESTILOS DEL PRELOADER AJUSTADOS */
 #preloader {
     position: fixed;
     top: 0;
@@ -74,7 +72,6 @@ body{background-color:#050505;color:#ffffff;overflow-x:hidden}
     display: flex;
     justify-content: center;
     align-items: center;
-    /* Transición mucho más rápida para el fondo (0.8s en lugar de 1.5s) */
     transition: background-color 0.8s ease-in-out, opacity 0.8s ease-out;
 }
 #preloader img {
@@ -106,9 +103,9 @@ body{background-color:#050505;color:#ffffff;overflow-x:hidden}
 <div class="flex justify-between items-center h-24">
 <div class="flex-shrink-0 flex items-center gap-4 cursor-pointer" onclick="window.scrollTo(0,0)">
 <img src="img/OIP.png" alt="Baluarte Logo" class="h-14 w-auto object-contain">
-<div class="flex flex-col -space-y-1 leading-none">
-    <span class="text-gray-300 text-[10px] sm:text-xs uppercase tracking-wider font-medium">Proyectos de integración</span>
-    <span class="text-brand-red font-display font-black text-2xl sm:text-3xl tracking-wide">BALUARTE</span>
+<div class="flex flex-col justify-center">
+    <span class="text-gray-300 text-[0.65rem] uppercase tracking-normal font-medium leading-tight">Proyectos de integración</span>
+    <span class="text-brand-red font-display font-black text-3xl tracking-[0.16em] leading-none">BALUARTE</span>
 </div>
 </div>
 
@@ -398,9 +395,9 @@ Explore our recent developments in industrial automation and tooling.
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
 <div class="flex items-center gap-3 mb-4 md:mb-0">
 <img src="img/OIP.png" alt="Baluarte Logo" class="h-10 w-auto object-contain">
-<div class="flex flex-col -space-y-1 leading-none">
-    <span class="text-gray-500 text-[10px] uppercase tracking-wider font-medium">Proyectos de integración</span>
-    <span class="text-brand-red font-display font-bold text-xl tracking-wide">BALUARTE</span>
+<div class="flex flex-col justify-center">
+    <span class="text-gray-500 text-[0.65rem] uppercase tracking-normal font-medium leading-tight">Proyectos de integración</span>
+    <span class="text-brand-red font-display font-bold text-xl tracking-[0.16em] leading-none">BALUARTE</span>
 </div>
 </div>
 <div class="text-gray-500 text-sm">
@@ -742,11 +739,9 @@ renderer.render(scene, camera);
 };
 animate();
 };
-// EFECTO CRISTAL HÚMEDO (BLANCO 10%)
 window.addEventListener('scroll', () => {
 const nav = document.getElementById('navbar');
 if (window.scrollY > 50) {
-// 'bg-white/10' representa ese "1.2" de blancura sobre 10
 nav.classList.add('bg-white/10', 'backdrop-blur-xl', 'border-b', 'border-white/10', 'shadow-lg');
 } else {
 nav.classList.remove('bg-white/10', 'backdrop-blur-xl', 'border-b', 'border-white/10', 'shadow-lg');
@@ -1003,23 +998,16 @@ window.addEventListener('DOMContentLoaded', () => {
 initThreeJS();
 document.getElementById('lang-btn-text').innerText = "ES";
 document.getElementById('lang-btn-text-mobile').innerText = "ES";
-// SECUENCIA DE PRELOADER ACELERADA
 setTimeout(() => {
 const loader = document.getElementById('preloader');
-// 1. Desvanecer GIF (inicio a 3.0s)
 loader.classList.add('gif-fade-out');
-
 setTimeout(() => {
-    // 2. Fondo a negro (solo 0.6s después de que el GIF empieza a desvanecerse)
-    loader.classList.add('bg-fade-to-black');
-
-    setTimeout(() => {
-            // 3. Desaparecer todo (solo 1s para completar la transición de fondo)
-        loader.classList.add('finish');
-        setTimeout(() => loader.remove(), 1000);
-    }, 1000); // Antes era 1500
-}, 600); // Antes era 1000
-}, 3000); // Antes era 3500
+loader.classList.add('bg-fade-to-black');
+setTimeout(() => {
+loader.classList.add('finish');
+setTimeout(() => loader.remove(), 1000);
+}, 600); 
+}, 3000); 
 });
 const script = document.createElement('script');
 script.src = "https://assets.calendly.com/assets/external/widget.js";

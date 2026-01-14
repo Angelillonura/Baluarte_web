@@ -61,13 +61,48 @@ body{background-color:#050505;color:#ffffff;overflow-x:hidden}
 @keyframes typing{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
 .locked-state{filter:blur(8px) grayscale(0.8);pointer-events:none;transition:all 0.8s ease}
 .unlocked-state{filter:blur(0) grayscale(0);pointer-events:auto}
-#preloader{position:fixed;top:0;left:0;width:100%;height:100%;background-color:#000;z-index:9999;display:flex;justify-content:center;align-items:center;transition:opacity 0.5s ease-out}
+
+/* ESTILOS DEL PRELOADER */
+#preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff; /* INICIO BLANCO */
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Transición suave para el fondo y la opacidad */
+    transition: background-color 1.5s ease-in-out, opacity 1s ease-out;
+}
+
+#preloader img {
+    transition: opacity 1s ease-in-out;
+}
+
+/* Estado Intermedio: Fondo negro, GIF se oculta para no ver el cuadro blanco */
+#preloader.fade-to-black {
+    background-color: #000000;
+}
+#preloader.fade-to-black img {
+    opacity: 0;
+}
+
+/* Estado Final: Todo el contenedor desaparece */
+#preloader.finish {
+    opacity: 0;
+    pointer-events: none;
+}
 </style>
 </head>
 <body class="font-sans antialiased selection:bg-brand-orange selection:text-white">
+
 <div id="preloader">
-<img src="img/Animación_De_Logo_Generada.gif" alt="Cargando..." class="w-64 h-auto md:w-96 object-contain">
+    <img src="img/Animación_De_Logo_Generada.gif" alt="Cargando..." class="w-64 h-auto md:w-96 object-contain">
 </div>
+
 <div id="canvas-container"></div>
 <div id="focus-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[55] opacity-0 pointer-events-none transition-opacity duration-500"></div>
 <nav class="fixed w-full z-50 top-0 transition-all duration-300" id="navbar">
@@ -962,9 +997,12 @@ document.getElementById('lang-btn-text').innerText = "ES";
 document.getElementById('lang-btn-text-mobile').innerText = "ES";
 setTimeout(() => {
 const loader = document.getElementById('preloader');
-loader.classList.add('opacity-0', 'pointer-events-none');
-setTimeout(() => loader.remove(), 500);
-}, 2500);
+loader.classList.add('fade-to-black');
+setTimeout(() => {
+loader.classList.add('finish');
+setTimeout(() => loader.remove(), 1000);
+}, 1500);
+}, 4000); 
 });
 const script = document.createElement('script');
 script.src = "https://assets.calendly.com/assets/external/widget.js";
@@ -973,4 +1011,3 @@ document.body.appendChild(script);
 </script>
 </body>
 </html>
-

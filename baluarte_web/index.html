@@ -106,11 +106,13 @@ body{background-color:#050505;color:#ffffff;overflow-x:hidden}
 <div class="flex justify-between items-center h-24">
 
 <div class="flex-shrink-0 flex items-center gap-4 cursor-pointer" onclick="window.scrollTo(0,0)">
-    <img src="img/OIP.png" alt="Baluarte Logo" class="h-14 w-auto object-contain">
+    <div class="relative w-14 h-14">
+        <div class="absolute inset-0 bg-white/50 blur-md rounded-full scale-75"></div>
+        <img src="img/OIP.png" alt="Baluarte Logo" class="h-14 w-auto object-contain relative z-10">
+    </div>
     <div class="flex flex-col -space-y-1 leading-none">
         <span class="text-gray-300 text-[10px] sm:text-xs uppercase tracking-[0.15em] font-medium">Proyectos de integración</span>
-        
-        <span class="text-brand-red font-display font-black text-2xl sm:text-3xl tracking-[0.20em] sm:tracking-[0.30em]">BALUARTE</span>
+        <span class="text-brand-red font-display font-black text-2xl sm:text-3xl tracking-[0.20em] sm:tracking-[0.30em]" style="font-weight: 900;">BALUARTE</span>
     </div>
 </div>
 
@@ -1031,6 +1033,7 @@ document.body.appendChild(script);
 </script>
 </body>
 </html>
+
 
 
 

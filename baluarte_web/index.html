@@ -890,12 +890,12 @@ specsList.appendChild(li);
 document.getElementById('projectDetailModal').classList.add('active');
 }
 async function callGemini(prompt, systemInstruction = "You are a helpful assistant.") {
-try {
-const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-method: 'POST',
-headers: {
-'Content-Type': 'application/json'
-},
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
 body: JSON.stringify({
 contents: [{
 parts: [{ text: prompt }]
@@ -1008,23 +1008,17 @@ window.addEventListener('DOMContentLoaded', () => {
 initThreeJS();
 document.getElementById('lang-btn-text').innerText = "ES";
 document.getElementById('lang-btn-text-mobile').innerText = "ES";
-// SECUENCIA DE PRELOADER ACELERADA
 setTimeout(() => {
 const loader = document.getElementById('preloader');
-// 1. Desvanecer GIF (inicio a 3.0s)
 loader.classList.add('gif-fade-out');
-
 setTimeout(() => {
-    // 2. Fondo a negro (solo 0.6s después de que el GIF empieza a desvanecerse)
     loader.classList.add('bg-fade-to-black');
-
     setTimeout(() => {
-            // 3. Desaparecer todo (solo 1s para completar la transición de fondo)
         loader.classList.add('finish');
         setTimeout(() => loader.remove(), 1000);
-    }, 1000); // Antes era 1500
-}, 600); // Antes era 1000
-}, 3000); // Antes era 3500
+    }, 1000); 
+}, 600); 
+}, 3000); 
 });
 const script = document.createElement('script');
 script.src = "https://assets.calendly.com/assets/external/widget.js";
@@ -1033,6 +1027,7 @@ document.body.appendChild(script);
 </script>
 </body>
 </html>
+
 
 
 

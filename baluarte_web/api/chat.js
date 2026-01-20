@@ -1,16 +1,26 @@
 export const config = {
   runtime: 'nodejs18.x'
 };
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { message, system } = req.body;
+    const body =
+      typeof req.body === 'string'
+        ? JSON.parse(req.body)
+        : req.body;
+
+    const { message, system } = body || {};
 
     if (!message) {
       return res.status(400).json({ error: 'Missing message' });
+    }
+
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({ error: 'Missing GEMINI_API_KEY' });
     }
 
     const response = await fetch(
@@ -36,18 +46,16 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error('Gemini error:', data);
+      console.error('Gemini API error:', data);
       return res.status(500).json({ error: 'Gemini API error' });
     }
 
-    res.status(200).json({
-      text: data.candidates?.[0]?.content?.parts?.[0]?.text || ''
+    return res.status(200).json({
+      text: data?.candidates?.[0]?.content?.parts?.[0]?.text || ''
     });
 
   } catch (error) {
     console.error('Server error:', error);
-    res.status(500).json({ error: 'Server error' });
+    return res.status(500).json({ error: 'Server error' });
   }
 }
-
-

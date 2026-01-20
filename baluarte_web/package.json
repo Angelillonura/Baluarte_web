@@ -1,3 +1,7 @@
+
 {
-  "type": "module"
+  "name": "baluarte-website",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {}
 }

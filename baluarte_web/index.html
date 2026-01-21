@@ -880,6 +880,8 @@ document.getElementById('projectDetailModal').classList.add('active');
 }
 async function callGemini(prompt, systemInstruction) {
   try {
+    console.log("Enviando mensaje al backend..."); // Log para depurar
+    
     const response = await fetch('/api/chat', {
       method: 'POST',
       headers: {
@@ -891,19 +893,28 @@ async function callGemini(prompt, systemInstruction) {
       })
     });
 
+    // Si la respuesta no es JSON válido (ej. error 404 HTML de Vercel), esto fallará y lo veremos
+    const contentType = response.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+       const text = await response.text();
+       console.error("Respuesta no JSON recibida:", text);
+       throw new Error("El servidor no devolvió JSON. Posible error 404 o 500.");
+    }
+
     const data = await response.json();
 
     if (!response.ok) {
+      console.error("Error devuelto por la API:", data);
       throw new Error(data.error || 'Chat error');
     }
 
     return data.text;
 
   } catch (error) {
-    console.error('Chat error:', error);
+    console.error('Chat error detallado:', error);
     return currentLang === 'es'
-      ? 'Lo siento, hubo un problema al conectar con el asistente.'
-      : 'Sorry, there was a problem connecting to the assistant.';
+      ? 'Lo siento, hubo un problema técnico. Revisa la consola (F12) para más detalles.'
+      : 'Sorry, technical issue. Check console (F12) for details.';
   }
 }
 
@@ -1019,6 +1030,7 @@ document.body.appendChild(script);
 </script>
 </body>
 </html>
+
 
 
 

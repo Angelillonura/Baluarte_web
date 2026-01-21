@@ -422,36 +422,95 @@ if (translations[currentLang][key]) el.placeholder = translations[currentLang][k
 });
 }
 
-// === LÓGICA DEL FORMULARIO (SAFE) ===
-async function handleLeadSubmit(e) {
-e.preventDefault();
-const form = e.target;
-const btn = document.getElementById('btnSubmitLead');
-// Verificación segura del span para evitar crash
-const span = btn.querySelector('span');
-const originalTextKey = span ? span.getAttribute('data-i18n') : null;
-const originalText = originalTextKey ? translations[currentLang][originalTextKey] : btn.innerText;
+// === LOGICA DE SEGURIDAD Y TOKEN (NUEVO) ===
+let calendlyToken = null;
 
-btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${translations[currentLang]['btn_sending']}`;
-btn.disabled = true;
-const formData = new FormData(form);
-try {
-const response = await fetch("https://formsubmit.co/ajax/angelillonura@gmail.com", { method: "POST", body: formData });
-if (response.ok) {
-document.getElementById('leadForm').classList.add('hidden');
-document.getElementById('leadSuccess').classList.remove('hidden');
-document.getElementById('calendlyLock').classList.add('opacity-0', 'pointer-events-none');
-const card = document.getElementById('calendlyCard');
-card.classList.remove('locked-state'); card.classList.add('unlocked-state');
-} else {
-alert("Error submitting form. Please try again.");
-btn.innerHTML = `<span data-i18n="btn_continue">${originalText}</span> <i class="fas fa-arrow-right"></i>`;
-btn.disabled = false;
-}} catch (error) {
-console.error("Form Error:", error); alert("Network error. Please try again.");
-btn.innerHTML = `<span data-i18n="btn_continue">${originalText}</span> <i class="fas fa-arrow-right"></i>`;
-btn.disabled = false;
-}}
+async function requestCalendlyUnlock(email) {
+  // NOTE: This assumes you have a backend route at /api/unlock-calendly
+  // that returns { "token": "some-token" }
+  try {
+    const res = await fetch('/api/unlock-calendly', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+
+    if (!res.ok) {
+       // For demo purposes if backend fails, we might throw,
+       // but user wants strict logic.
+       throw new Error('Calendly unlock failed');
+    }
+
+    const data = await res.json();
+    calendlyToken = data.token;
+  } catch (e) {
+    console.error("Backend Auth Error:", e);
+    // OPTIONAL: For testing without a backend, uncomment the line below:
+    // calendlyToken = "demo-token";
+    throw e; // Re-throw to stop the UI unlocking
+  }
+}
+
+// === LÓGICA DEL FORMULARIO ===
+async function handleLeadSubmit(e) {
+  e.preventDefault();
+  const form = e.target;
+  const btn = document.getElementById('btnSubmitLead');
+  const span = btn.querySelector('span');
+  const originalTextKey = span ? span.getAttribute('data-i18n') : null;
+  const originalText = originalTextKey ? translations[currentLang][originalTextKey] : btn.innerText;
+
+  btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${translations[currentLang]['btn_sending']}`;
+  btn.disabled = true;
+  const formData = new FormData(form);
+  
+  try {
+    const response = await fetch("https://formsubmit.co/ajax/angelillonura@gmail.com", { method: "POST", body: formData });
+    
+    if (response.ok) {
+      document.getElementById('leadForm').classList.add('hidden');
+      document.getElementById('leadSuccess').classList.remove('hidden');
+
+      // 🔐 AUTORIZACIÓN REAL - Esperamos el token del backend
+      try {
+          await requestCalendlyUnlock(formData.get('email'));
+
+          // 🎨 SOLO AQUI DESBLOQUEAMOS (Si auth tiene éxito)
+          document.getElementById('calendlyLock').classList.add('opacity-0', 'pointer-events-none');
+          const card = document.getElementById('calendlyCard');
+          card.classList.remove('locked-state');
+          card.classList.add('unlocked-state');
+      } catch (authError) {
+          alert(currentLang === 'es' ? "Error autorizando calendario. Contacte soporte." : "Error authorizing calendar. Contact support.");
+      }
+
+    } else {
+      alert("Error submitting form. Please try again.");
+      btn.innerHTML = `<span data-i18n="btn_continue">${originalText}</span> <i class="fas fa-arrow-right"></i>`;
+      btn.disabled = false;
+    }
+  } catch (error) {
+    console.error("Form Error:", error); alert("Network error. Please try again.");
+    btn.innerHTML = `<span data-i18n="btn_continue">${originalText}</span> <i class="fas fa-arrow-right"></i>`;
+    btn.disabled = false;
+  }
+}
+
+// === APERTURA SEGURA DE CALENDLY (NUEVO) ===
+function openCalendlySecure() {
+  if (!calendlyToken) {
+    alert(
+      currentLang === 'es'
+        ? 'Por favor completa el formulario primero.'
+        : 'Please complete the form first.'
+    );
+    return;
+  }
+
+  Calendly.initPopupWidget({
+    url: 'https://calendly.com/angelnura253/baluarte'
+  });
+}
 
 // === INICIALIZACIÓN THREE.JS (Se llama solo cuando el preloader termina) ===
 const initThreeJS = () => {
@@ -734,4 +793,3 @@ const startApp = () => {
 </script>
 </body>
 </html>
-

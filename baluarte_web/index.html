@@ -9,6 +9,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
 <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
 <script>
 tailwind.config = {
@@ -1010,7 +1011,7 @@ div.innerHTML = `
 <i class="fas fa-robot text-brand-orange text-xs"></i>
 </div>
 <div class="bg-gray-800 text-gray-200 text-sm p-3 rounded-2xl rounded-tl-none border border-gray-700 max-w-[85%]">
-${marked.parse(text)}
+${DOMPurify.sanitize(marked.parse(text))}
 </div>
 `;
 } else {
@@ -1071,3 +1072,4 @@ document.body.appendChild(script);
 </script>
 </body>
 </html>
+

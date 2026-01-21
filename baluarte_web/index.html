@@ -375,7 +375,7 @@ Explore our recent developments in industrial automation and tooling.
 </div>
 <h2 data-i18n="cal_title" class="text-3xl font-display font-bold text-white mb-4">Schedule a Meeting</h2>
 <p data-i18n="cal_desc" class="text-gray-400 mb-8 max-w-md mx-auto">Book a technical consultation directly with our engineering team using Calendly.</p>
-<button onclick="Calendly.initPopupWidget({url: 'https://calendly.com/angelnura253/baluarte'}); return false;" class="w-full sm:w-auto px-8 py-4 bg-transparent border-2 border-brand-yellow text-brand-yellow font-bold rounded-lg hover:bg-brand-yellow hover:text-black transition-all duration-300 shadow-[0_0_20px_rgba(245,158,11,0.1)] hover:shadow-[0_0_30px_rgba(245,158,11,0.4)] flex items-center justify-center gap-3">
+<button onclick="openCalendlySecure()" class="w-full sm:w-auto px-8 py-4 bg-transparent border-2 border-brand-yellow text-brand-yellow font-bold rounded-lg hover:bg-brand-yellow hover:text-black transition-all duration-300 shadow-[0_0_20px_rgba(245,158,11,0.1)] hover:shadow-[0_0_30px_rgba(245,158,11,0.4)] flex items-center justify-center gap-3">
 <span data-i18n="btn_meeting">Book with Calendly</span>
 <i class="fas fa-external-link-alt text-sm"></i>
 </button>
@@ -487,6 +487,21 @@ Request Similar Solution
 </div>
 </div>
 <script>
+function openCalendlySecure() {
+  if (!calendlyToken) {
+    alert(
+      currentLang === 'es'
+        ? 'Por favor completa el formulario primero.'
+        : 'Please complete the form first.'
+    );
+    return;
+  }
+
+  Calendly.initPopupWidget({
+    url: 'https://calendly.com/angelnura253/baluarte'
+  });
+}
+
 const translations = {
 en: {
 nav_projects: "Projects",
@@ -634,6 +649,22 @@ ai_enhancing: "Mejorando..."
 }
 };
 let currentLang = 'en';
+let calendlyToken = null;
+async function requestCalendlyUnlock(email) {
+  const res = await fetch('/api/unlock-calendly', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email })
+  });
+
+  if (!res.ok) {
+    throw new Error('Calendly unlock failed');
+  }
+
+  const data = await res.json();
+  calendlyToken = data.token;
+}
+
 function toggleLanguage() {
 currentLang = currentLang === 'en' ? 'es' : 'en';
 updateContent();
@@ -670,14 +701,19 @@ method: "POST",
 body: formData
 });
 if (response.ok) {
-document.getElementById('leadForm').classList.add('hidden');
-document.getElementById('leadSuccess').classList.remove('hidden');
-const lock = document.getElementById('calendlyLock');
-lock.classList.add('opacity-0', 'pointer-events-none');
-const card = document.getElementById('calendlyCard');
-card.classList.remove('locked-state');
-card.classList.add('unlocked-state');
-} else {
+  document.getElementById('leadForm').classList.add('hidden');
+  document.getElementById('leadSuccess').classList.remove('hidden');
+
+  await requestCalendlyUnlock(formData.get('email'));
+
+  const lock = document.getElementById('calendlyLock');
+  lock.classList.add('opacity-0', 'pointer-events-none');
+
+  const card = document.getElementById('calendlyCard');
+  card.classList.remove('locked-state');
+  card.classList.add('unlocked-state');
+}
+ else {
 alert("Error submitting form. Please try again.");
 btn.innerHTML = `<span data-i18n="btn_continue">${originalText}</span> <i class="fas fa-arrow-right"></i>`;
 btn.disabled = false;
@@ -1072,4 +1108,5 @@ document.body.appendChild(script);
 </script>
 </body>
 </html>
+
 

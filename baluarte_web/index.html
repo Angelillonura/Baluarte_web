@@ -670,42 +670,64 @@ const startApp = () => {
 <script>
 (function() {
     const loader = document.getElementById('preloader');
-    
+    let isLoaded = false; // Bandera para evitar doble ejecución
+
     // Función que elimina el loader y arranca la app
     const runExitAnimation = () => {
-        if (!loader) return;
+        if (!loader || isLoaded) return;
+        isLoaded = true;
         
+        console.log("Preloader: Iniciando animación de salida...");
+
         // Paso 1: Fade out del GIF
         loader.classList.add('gif-fade-out');
         
-        // Paso 2: Fade out del fondo (después de 1.2s)
+        // Paso 2: Fade out del fondo (después de 1s)
         setTimeout(() => {
             loader.classList.add('bg-fade-to-black');
             
             // !! AQUÍ EJECUTAMOS EL RESTO DE SCRIPTS !! 
-            // Esto cumple tu requisito: "una vez esta cargue se ejecuten los demas"
+            // Esto asegura que la lógica pesada no compita con la carga inicial
             if (typeof startApp === 'function') {
-                startApp(); 
+                try {
+                    startApp(); 
+                } catch(e) {
+                    console.error("Error iniciando app:", e);
+                }
             }
 
-            // Paso 3: Eliminar del DOM (después de 1.5s más)
+            // Paso 3: Eliminar del DOM (después de 1s más)
             setTimeout(() => {
                 loader.classList.add('finish');
-                setTimeout(() => loader.remove(), 1000);
-            }, 1500);
+                setTimeout(() => {
+                    if(loader) loader.remove();
+                }, 1000);
+            }, 1000);
 
-        }, 1200);
+        }, 1000);
     };
 
-    // Estrategia: Esperar a que la ventana cargue + 3 segundos obligatorios
-    window.addEventListener('load', () => {
-         setTimeout(runExitAnimation, 3000);
-    });
+    // ESTRATEGIA MIXTA:
+    // 1. Si la página ya cargó (caché o carga rápida)
+    if (document.readyState === 'complete') {
+        setTimeout(runExitAnimation, 500);
+    } 
+    // 2. Evento estándar de carga completa
+    else {
+        window.addEventListener('load', () => {
+             // Esperamos 1.5s extra para que el usuario vea el logo
+            setTimeout(runExitAnimation, 1500); 
+        });
+    }
 
-    // Fallback de seguridad (por si 'load' falla en algún navegador raro)
+    // 3. SALVAVIDAS: Forzar salida a los 4 segundos máximo
+    // Esto es lo que evita el "Bucle Infinito" si falla una imagen o script externo.
     setTimeout(() => {
-        if(document.body.contains(loader)) runExitAnimation();
-    }, 10000);
+        if (!isLoaded) {
+            console.warn("Preloader: Forzando salida por tiempo de espera.");
+            runExitAnimation();
+        }
+    }, 4000);
 })();
 </script>
 </body>

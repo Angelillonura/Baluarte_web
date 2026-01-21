@@ -9,6 +9,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+
 <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
 
 <script>
@@ -277,7 +279,7 @@ body{background-color:#050505;color:#ffffff;overflow-x:hidden}
 <div class="w-20 h-20 bg-brand-gray rounded-full flex items-center justify-center mx-auto mb-6 border border-gray-700 shadow-xl group-hover:border-brand-yellow transition-colors duration-500"><i class="fas fa-calendar-alt text-3xl text-brand-yellow"></i></div>
 <h2 data-i18n="cal_title" class="text-3xl font-display font-bold text-white mb-4">Schedule a Meeting</h2>
 <p data-i18n="cal_desc" class="text-gray-400 mb-8 max-w-md mx-auto">Book a technical consultation directly with our engineering team using Calendly.</p>
-<button onclick="Calendly.initPopupWidget({url: 'https://calendly.com/angelnura253/baluarte'}); return false;" class="w-full sm:w-auto px-8 py-4 bg-transparent border-2 border-brand-yellow text-brand-yellow font-bold rounded-lg hover:bg-brand-yellow hover:text-black transition-all duration-300 shadow-[0_0_20px_rgba(245,158,11,0.1)] hover:shadow-[0_0_30px_rgba(245,158,11,0.4)] flex items-center justify-center gap-3"><span data-i18n="btn_meeting">Book with Calendly</span> <i class="fas fa-external-link-alt text-sm"></i></button>
+<button onclick="openCalendlySecure()" class="w-full sm:w-auto px-8 py-4 bg-transparent border-2 border-brand-yellow text-brand-yellow font-bold rounded-lg hover:bg-brand-yellow hover:text-black transition-all duration-300 shadow-[0_0_20px_rgba(245,158,11,0.1)] hover:shadow-[0_0_30px_rgba(245,158,11,0.4)] flex items-center justify-center gap-3"><span data-i18n="btn_meeting">Book with Calendly</span> <i class="fas fa-external-link-alt text-sm"></i></button>
 <div class="mt-8 flex items-center justify-center gap-4 text-xs text-gray-500"><span class="flex items-center gap-1"><i class="fas fa-video"></i> Google Meet</span><span class="w-1 h-1 bg-gray-700 rounded-full"></span><span class="flex items-center gap-1"><i class="fas fa-globe"></i> Auto-Timezone</span></div>
 </div>
 </div>
@@ -623,7 +625,7 @@ function addChatMessage(text, sender) {
 const container = document.getElementById('chatMessages');
 const div = document.createElement('div');
 div.className = "flex items-start gap-3 chat-enter";
-if(sender === 'ai') div.innerHTML = `<div class="w-6 h-6 bg-brand-orange/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1"><i class="fas fa-robot text-brand-orange text-xs"></i></div><div class="bg-gray-800 text-gray-200 text-sm p-3 rounded-2xl rounded-tl-none border border-gray-700 max-w-[85%]">${marked.parse(text)}</div>`;
+if(sender === 'ai') div.innerHTML = `<div class="w-6 h-6 bg-brand-orange/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1"><i class="fas fa-robot text-brand-orange text-xs"></i></div><div class="bg-gray-800 text-gray-200 text-sm p-3 rounded-2xl rounded-tl-none border border-gray-700 max-w-[85%]">${DOMPurify.sanitize(marked.parse(text))}</div>`;
 else {
 div.classList.add('justify-end');
 div.innerHTML = `<div class="bg-brand-orange text-white text-sm p-3 rounded-2xl rounded-tr-none max-w-[85%]">${text}</div>`;
@@ -732,3 +734,4 @@ const startApp = () => {
 </script>
 </body>
 </html>
+

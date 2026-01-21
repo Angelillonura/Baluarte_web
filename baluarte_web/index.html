@@ -10,17 +10,23 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+
 <script>
+/* Configuración Tailwind */
 tailwind.config = {
-theme: {
-extend: {
-colors: { brand: { yellow: '#FFC107', orange: '#FF5722', red: '#D50000', dark: '#0A0A0A', gray: '#171717' } },
-fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Space Grotesk', 'sans-serif'] },
-animation: { 'float': 'float 6s ease-in-out infinite', 'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite' },
-keyframes: { float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-20px)' } } }
-}}}
+  theme: {
+    extend: {
+      colors: { brand: { yellow: '#FFC107', orange: '#FF5722', red: '#D50000', dark: '#0A0A0A', gray: '#171717' } },
+      fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Space Grotesk', 'sans-serif'] },
+      animation: { 'float': 'float 6s ease-in-out infinite', 'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite' },
+      keyframes: { float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-20px)' } } }
+    }
+  }
+}
 </script>
+
 <style>
+/* Estilos Globales y Preloader */
 body{background-color:#050505;color:#ffffff;overflow-x:hidden}
 ::-webkit-scrollbar{width:8px}
 ::-webkit-scrollbar-track{background:#0A0A0A}
@@ -40,6 +46,8 @@ body{background-color:#050505;color:#ffffff;overflow-x:hidden}
 @keyframes typing{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
 .locked-state{filter:blur(8px) grayscale(0.8);pointer-events:none;transition:all 0.8s ease}
 .unlocked-state{filter:blur(0) grayscale(0);pointer-events:auto}
+
+/* CSS DEL PRELOADER */
 #preloader{position:fixed;top:0;left:0;width:100%;height:100%;background-color:#ffffff;z-index:9999;display:flex;justify-content:center;align-items:center;transition:background-color 0.8s ease-in-out, opacity 0.8s ease-out}
 #preloader img{transition:opacity 0.5s ease-in-out}
 #preloader.gif-fade-out img{opacity:0}
@@ -47,22 +55,29 @@ body{background-color:#050505;color:#ffffff;overflow-x:hidden}
 #preloader.finish{opacity:0;pointer-events:none}
 </style>
 </head>
+
 <body class="font-sans antialiased selection:bg-brand-orange selection:text-white">
-<div id="preloader"><img src="img/Animación_De_Logo_Generada.gif" alt="Cargando..." class="w-64 h-auto md:w-96 object-contain"></div>
+
+<div id="preloader">
+    <img src="img/animacion_logo.gif" alt="Cargando..." class="w-64 h-auto md:w-96 object-contain">
+</div>
+
 <div id="canvas-container"></div>
+
 <div id="focus-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[55] opacity-0 pointer-events-none transition-opacity duration-500"></div>
+
 <nav class="fixed w-full z-50 top-0 transition-all duration-500 ease-in-out" id="navbar">
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 <div class="flex justify-between items-center h-24">
 <div class="flex-shrink-0 flex items-center gap-4 cursor-pointer" onclick="window.scrollTo(0,0)">
-<div class="relative w-14 h-14">
-<div class="absolute inset-0 bg-white blur-xl rounded-full logo-glow"></div>
-<img src="img/OIP.png" alt="Baluarte Logo" class="h-14 w-auto object-contain relative z-10">
-</div>
-<div class="flex flex-col -space-y-1 leading-none">
-<span class="text-gray-300 text-[10px] sm:text-xs uppercase tracking-[0.15em] font-medium">Proyectos de integración</span>
-<span class="text-brand-red font-display font-black text-2xl sm:text-3xl tracking-[0.20em] sm:tracking-[0.30em]" style="font-weight: 900;">BALUARTE</span>
-</div>
+    <div class="relative w-14 h-14">
+        <div class="absolute inset-0 bg-white blur-xl rounded-full logo-glow"></div>
+        <img src="img/OIP.png" alt="Baluarte Logo" class="h-14 w-auto object-contain relative z-10">
+    </div>
+    <div class="flex flex-col -space-y-1 leading-none">
+        <span class="text-gray-300 text-[10px] sm:text-xs uppercase tracking-[0.15em] font-medium">Proyectos de integración</span>
+        <span class="text-brand-red font-display font-black text-2xl sm:text-3xl tracking-[0.20em] sm:tracking-[0.30em]" style="font-weight: 900;">BALUARTE</span>
+    </div>
 </div>
 <div class="hidden md:flex space-x-8 items-center">
 <a href="#projects" data-i18n="nav_projects" class="text-gray-300 hover:text-brand-yellow transition-colors text-sm uppercase tracking-widest font-medium">Projects</a>
@@ -84,6 +99,7 @@ body{background-color:#050505;color:#ffffff;overflow-x:hidden}
 </div>
 </div>
 </nav>
+
 <section class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
 <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce text-gray-500"><i class="fas fa-chevron-down text-xl"></i></div>
 <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -96,6 +112,7 @@ body{background-color:#050505;color:#ffffff;overflow-x:hidden}
 </div>
 </div>
 </section>
+
 <div id="services" class="bg-brand-dark border-y border-gray-800 relative z-20 transition-all duration-300">
 <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
@@ -138,6 +155,7 @@ body{background-color:#050505;color:#ffffff;overflow-x:hidden}
 </div>
 </div>
 </div>
+
 <section id="projects" class="py-24 relative z-20 bg-black/80 backdrop-blur-md">
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 <div class="flex flex-col md:flex-row justify-between items-end mb-16">
@@ -220,6 +238,7 @@ body{background-color:#050505;color:#ffffff;overflow-x:hidden}
 </div>
 </div>
 </section>
+
 <section id="contact" class="py-24 relative z-20">
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -266,6 +285,7 @@ body{background-color:#050505;color:#ffffff;overflow-x:hidden}
 </div>
 </div>
 </section>
+
 <footer class="bg-black py-12 border-t border-gray-900 relative z-20">
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
 <div class="flex items-center gap-3 mb-4 md:mb-0">
@@ -280,6 +300,7 @@ body{background-color:#050505;color:#ffffff;overflow-x:hidden}
 </div>
 </div>
 </footer>
+
 <div class="fixed bottom-6 right-6 z-50">
 <button onclick="toggleChat()" id="chatToggleBtn" class="w-14 h-14 bg-gradient-brand rounded-full flex items-center justify-center shadow-2xl hover:scale-105 transition-transform group">
 <i class="fas fa-comment-dots text-2xl text-white group-hover:hidden"></i><i class="fas fa-robot text-2xl text-white hidden group-hover:block"></i>
@@ -306,6 +327,7 @@ body{background-color:#050505;color:#ffffff;overflow-x:hidden}
 </div>
 </div>
 </div>
+
 <div id="successModal" class="modal fixed inset-0 z-[100] flex items-center justify-center px-4 bg-black/80 backdrop-blur-sm">
 <div class="bg-brand-gray border border-gray-700 p-8 rounded-2xl max-w-md w-full text-center relative overflow-hidden">
 <div class="absolute top-0 left-0 w-full h-1 bg-gradient-brand"></div>
@@ -333,7 +355,9 @@ body{background-color:#050505;color:#ffffff;overflow-x:hidden}
 </div>
 </div>
 </div>
+
 <script>
+// === TRADUCCIONES ===
 const translations = {
 en: {
 nav_projects: "Projects", nav_services: "Services", nav_contact: "Contact Us",
@@ -395,12 +419,17 @@ const key = el.getAttribute('data-i18n-placeholder');
 if (translations[currentLang][key]) el.placeholder = translations[currentLang][key];
 });
 }
+
+// === LÓGICA DEL FORMULARIO (SAFE) ===
 async function handleLeadSubmit(e) {
 e.preventDefault();
 const form = e.target;
 const btn = document.getElementById('btnSubmitLead');
-const originalTextKey = btn.querySelector('span').getAttribute('data-i18n');
-const originalText = translations[currentLang][originalTextKey];
+// Verificación segura del span para evitar crash
+const span = btn.querySelector('span');
+const originalTextKey = span ? span.getAttribute('data-i18n') : null;
+const originalText = originalTextKey ? translations[currentLang][originalTextKey] : btn.innerText;
+
 btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${translations[currentLang]['btn_sending']}`;
 btn.disabled = true;
 const formData = new FormData(form);
@@ -421,6 +450,8 @@ console.error("Form Error:", error); alert("Network error. Please try again.");
 btn.innerHTML = `<span data-i18n="btn_continue">${originalText}</span> <i class="fas fa-arrow-right"></i>`;
 btn.disabled = false;
 }}
+
+// === INICIALIZACIÓN THREE.JS (Se llama solo cuando el preloader termina) ===
 const initThreeJS = () => {
 const container = document.getElementById('canvas-container');
 if(!container) return;
@@ -475,6 +506,8 @@ renderer.render(scene, camera);
 };
 animate();
 };
+
+// === EVENTOS UI ===
 window.addEventListener('scroll', () => {
 const nav = document.getElementById('navbar');
 if (window.scrollY > 50) nav.classList.add('bg-white/10', 'backdrop-blur-xl', 'border-b', 'border-white/10', 'shadow-lg');
@@ -511,6 +544,7 @@ section.classList.remove('z-[60]');
 const allCards = document.querySelectorAll('.service-card');
 allCards.forEach(c => c.classList.remove('blur-sm', 'opacity-40', 'scale-95', 'scale-105', 'z-10', 'ring-2', 'ring-brand-orange/50'));
 }
+// === DATOS PROYECTOS ===
 const projectData = {
 1: {
 title: "ECU Testing Fixture", desc: "This custom fixture was engineered for a Tier-1 automotive supplier to test Engine Control Units. It features an integrated pogo-pin cassette mechanism and pneumatic clamps to ensure 100% reliable contact during high-speed production testing.", category: "Automotive", icon: "fa-car-battery",
@@ -552,6 +586,7 @@ specsList.appendChild(li);
 });
 document.getElementById('projectDetailModal').classList.add('active');
 }
+// === CHAT AI ===
 async function callGemini(prompt, systemInstruction) {
 try {
 const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: prompt, system: systemInstruction }) });
@@ -609,27 +644,69 @@ function removeChatMessage(id) {
 const el = document.getElementById(id);
 if(el) el.remove();
 }
-window.addEventListener('load', () => {
-document.getElementById('lang-btn-text').innerText = "ES";
-document.getElementById('lang-btn-text-mobile').innerText = "ES";
-try { if (typeof THREE !== 'undefined') initThreeJS(); } catch (e) { console.error(e); }
-const loader = document.getElementById('preloader');
-if (!loader) return;
-setTimeout(() => {
-loader.classList.add('gif-fade-out');
-setTimeout(() => {
-loader.classList.add('bg-fade-to-black');
-setTimeout(() => {
-loader.classList.add('finish');
-setTimeout(() => loader.remove(), 1000);
-}, 800);
-}, 600);
-}, 1500);
-});
-const script = document.createElement('script');
-script.src = "https://assets.calendly.com/assets/external/widget.js";
-script.async = true;
-document.body.appendChild(script);
+
+// === ORQUESTADOR DE INICIO (El que hace magia) ===
+// Esta función carga los scripts pesados SOLO cuando se le llama
+const startApp = () => {
+    // 1. Inicializar Textos
+    document.getElementById('lang-btn-text').innerText = "ES";
+    document.getElementById('lang-btn-text-mobile').innerText = "ES";
+    
+    // 2. Cargar Three.js (si existe)
+    try { 
+        if (typeof THREE !== 'undefined') initThreeJS(); 
+    } catch (e) { 
+        console.error("ThreeJS Error", e); 
+    }
+
+    // 3. Cargar Calendly (Lazy load)
+    const script = document.createElement('script');
+    script.src = "https://assets.calendly.com/assets/external/widget.js";
+    script.async = true;
+    document.body.appendChild(script);
+};
+</script>
+
+<script>
+(function() {
+    const loader = document.getElementById('preloader');
+    
+    // Función que elimina el loader y arranca la app
+    const runExitAnimation = () => {
+        if (!loader) return;
+        
+        // Paso 1: Fade out del GIF
+        loader.classList.add('gif-fade-out');
+        
+        // Paso 2: Fade out del fondo (después de 1.2s)
+        setTimeout(() => {
+            loader.classList.add('bg-fade-to-black');
+            
+            // !! AQUÍ EJECUTAMOS EL RESTO DE SCRIPTS !! 
+            // Esto cumple tu requisito: "una vez esta cargue se ejecuten los demas"
+            if (typeof startApp === 'function') {
+                startApp(); 
+            }
+
+            // Paso 3: Eliminar del DOM (después de 1.5s más)
+            setTimeout(() => {
+                loader.classList.add('finish');
+                setTimeout(() => loader.remove(), 1000);
+            }, 1500);
+
+        }, 1200);
+    };
+
+    // Estrategia: Esperar a que la ventana cargue + 3 segundos obligatorios
+    window.addEventListener('load', () => {
+         setTimeout(runExitAnimation, 3000);
+    });
+
+    // Fallback de seguridad (por si 'load' falla en algún navegador raro)
+    setTimeout(() => {
+        if(document.body.contains(loader)) runExitAnimation();
+    }, 10000);
+})();
 </script>
 </body>
 </html>

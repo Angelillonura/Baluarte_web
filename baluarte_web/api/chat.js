@@ -1,14 +1,13 @@
 export default async function handler(req, res) {
-  // 1. Manejo de CORS (Importante para que el frontend pueda hablar con el backend)
+  // 1. Configuración de CORS
   res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*'); // O pon tu dominio real en lugar de '*'
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
   res.setHeader(
     'Access-Control-Allow-Headers',
     'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
   );
 
-  // Responder a preflight requests
   if (req.method === 'OPTIONS') {
     res.status(200).end();
     return;
@@ -23,36 +22,37 @@ export default async function handler(req, res) {
     const { message, system } = body || {};
 
     if (!process.env.GEMINI_API_KEY) {
-      return res.status(500).json({ error: 'Falta la API Key en el servidor' });
+      return res.status(500).json({ error: 'Falta GEMINI_API_KEY en Vercel' });
     }
 
-    // Construcción del payload
+    const MODEL_NAME = 'gemini-1.5-flash';
+    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${process.env.GEMINI_API_KEY}`;
+
     const payload = {
       contents: [{ parts: [{ text: message }] }]
     };
 
-    // Solo agregar instrucciones del sistema si existen
     if (system) {
       payload.systemInstruction = {
         parts: [{ text: system }]
       };
     }
 
-    
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      }
-    );
+    // 3. Llamada a Google
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
 
     const data = await response.json();
 
     if (!response.ok) {
-      console.error('Error de Gemini:', data);
-      return res.status(500).json({ error: data.error?.message || 'Error en Gemini API' });
+      console.error('Error detallado de Gemini:', JSON.stringify(data, null, 2));
+      // Devolvemos el mensaje exacto de Google para que lo veas en consola si falla
+      return res.status(500).json({ error: data.error?.message || 'Error en la API de Google' });
     }
 
     return res.status(200).json({
@@ -64,6 +64,3 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: error.message });
   }
 }
-
-
-
